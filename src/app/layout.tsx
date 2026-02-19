@@ -47,6 +47,7 @@ export default async function RootLayout({
       <head>
         <script
           id="theme-init"
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
@@ -112,6 +113,7 @@ export default async function RootLayout({
           margin="0"
           padding="0"
           horizontal="center"
+          suppressHydrationWarning
         >
           <RevealFx fill position="absolute">
             <Background
