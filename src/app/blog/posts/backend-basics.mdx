@@ -1,0 +1,227 @@
+---
+title: "Backend Basics: APIs, Databases, and Server Design"
+summary: "Designing reliable APIs and data layers with Node.js, REST, and modern database patterns."
+publishedAt: "2025-02-10"
+tag: "Backend"
+---
+
+If the frontend is what users see, the backend is everything that makes it *work*. It’s where data, logic, and security meet. Whether you’re in Node.js, Python, or Go, the same principles apply: design APIs that scale, model your data with care, and make failure predictable instead of chaotic.
+
+Let’s walk through the core building blocks most modern backends share — and what really matters when you’re designing one from scratch.
+
+---
+
+## API design that scales
+
+You don’t need to reinvent APIs every time. **REST** is a simple, time-tested pattern for a reason: it’s predictable, easy to consume, and works everywhere. The key is not the format; it’s the *consistency*.
+
+### Keep naming consistent
+
+Each endpoint should represent **a resource**, not an action. Start with nouns:
+
+| Good | Bad |
+|------|-----|
+| `GET /api/users` | `GET /api/getUsers` |
+| `POST /api/orders` | `POST /api/createOrder` |
+| `DELETE /api/posts/:id` | `POST /api/deletePost` |
+
+Use **HTTP verbs** and **status codes** correctly:
+
+- `GET` → retrieve resources (200 or 404)  
+- `POST` → create (201 Created)  
+- `PUT/PATCH` → update (200 or 204)  
+- `DELETE` → remove (204 No Content if successful)
+
+Here’s a small example in Node.js with Express:
+
+```ts
+import express from "express";
+const app = express();
+
+app.use(express.json());
+
+app.get("/api/users", async (req, res) => {
+  const users = await db.user.findMany();
+  res.json(users);
+});
+
+app.post("/api/users", async (req, res) => {
+  const { name, email } = req.body;
+  if (!email) return res.status(400).json({ error: "Email required" });
+
+  const newUser = await db.user.create({ data: { name, email } });
+  res.status(201).json(newUser);
+});
+```
+
+A simple rule: if your API responses can tell the full story of a request without special documentation, you’re on the right track.
+
+### Versioning matters
+
+APIs grow and break — it’s inevitable. Plan for it early.
+
+- Add `/v1` to your base path  
+- Or version by header: `Accept: application/vnd.example.v1+json`
+
+That tiny detail saves you from frustrating client breakages later.
+
+### Document everything
+
+Use **OpenAPI** (Swagger) or tools like **Stoplight** to describe endpoints. It’s not just for other devs — your future self is also a “client” of this system. A well-documented API helps frontends move fast without waiting on backend devs for clarification.
+
+---
+
+## Databases: SQL vs NoSQL
+
+Databases are where backend decisions get real — because design mistakes here are expensive to fix later.
+
+### SQL (Postgres, MySQL)
+
+Relational databases are the default for a reason: strong consistency, ACID transactions, and decades of battle testing.
+
+If your app stores structured, relational data — users, posts, payments — start with SQL. Tools like **Prisma**, **Drizzle ORM**, or **TypeORM** let you write clean TypeScript models that compile to real SQL.
+
+Example (using Prisma):
+
+```ts
+// schema.prisma
+model User {
+  id      Int     @id @default(autoincrement())
+  name    String
+  email   String  @unique
+  posts   Post[]
+}
+
+model Post {
+  id        Int     @id @default(autoincrement())
+  title     String
+  content   String?
+  authorId  Int
+  author    User     @relation(fields: [authorId], references: [id])
+}
+```
+
+SQL enforces **relationships** and **constraints**, which protect you from bad data. It’s slower to “move fast and break things,” but way faster to debug later.
+
+### NoSQL (MongoDB, DynamoDB, Firestore)
+
+NoSQL shines for **huge scale** or **flexible schemas** — think real-time analytics, IoT streams, document storage. But “schema-less” doesn’t mean “structure-less.” You still need to model carefully.
+
+Example document structure for MongoDB:
+
+```js
+{
+  "_id": ObjectId("abc123"),
+  "userId": "u123",
+  "items": [
+    { "product": "shirt", "quantity": 2 },
+    { "product": "hat", "quantity": 1 }
+  ],
+  "createdAt": ISODate("2026-02-10T17:05:00Z")
+}
+```
+
+Without thoughtful indexes, query patterns, and validation, NoSQL can quietly become chaos. Always understand *how* your reads and writes scale.
+
+---
+
+## Node.js and the server
+
+If your team already uses JavaScript, sticking with Node.js makes everything smoother. You can share types, validation logic, and even models between front and back.
+
+Frameworks like **Express**, **Fastify**, or **NestJS** offer different trade‑offs:
+- Express → lightweight, flexible.
+- Fastify → faster and schema‑first.
+- Nest → opinionated, enterprise structure.
+
+Here’s a minimalist Express server with input validation:
+
+```ts
+import express from "express";
+import { z } from "zod";
+
+const app = express();
+app.use(express.json());
+
+const CreateTodoSchema = z.object({
+  title: z.string().min(1),
+  done: z.boolean().default(false),
+});
+
+app.post("/api/todos", (req, res) => {
+  const parse = CreateTodoSchema.safeParse(req.body);
+  if (!parse.success) {
+    return res.status(400).json({ error: parse.error.flatten() });
+  }
+
+  const newTodo = createTodoInDB(parse.data);
+  res.status(201).json(newTodo);
+});
+```
+
+Notice we validate and sanitize input right away. Never trust client data. Even good UIs can send bad requests (and some bad actors will do it intentionally).
+
+When you need CPU-heavy work — image processing, crypto, AI inference — offload it to **queues** (like BullMQ) or separate workers. Otherwise, your main thread stalls and request latency skyrockets.
+
+---
+
+## Security and operations
+
+This is where many projects stumble. Backend security isn’t just about encryption — it’s about *sane defaults* and observability.
+
+### Authentication and Authorization
+
+- For most apps, use **JWTs** or **sessions**.  
+- For third-party access, go with **OAuth 2.0** or **OpenID Connect**.  
+- For internal APIs, prefer **API keys** or **HMAC signatures**.
+
+If you’re building with Node, `passport`, `next-auth`, and `lucia` are solid choices.
+
+### Rate limiting and CORS
+
+Protect your routes with per-IP rate limits to avoid abuse. Libraries like `express-rate-limit` make this trivial:
+
+```ts
+import rateLimit from "express-rate-limit";
+
+const limiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 100,
+});
+
+app.use(limiter);
+```
+
+CORS is another common pain point — configure it narrowly, allow only necessary origins.
+
+### Observability and maintenance
+
+A backend that you can’t debug in production is a liability. Add:
+
+- **Structured logs** (with request IDs)  
+- **Health checks** (`/healthz` endpoints)
+- **Graceful shutdowns** to close DB connections cleanly before a restart
+
+Example:
+
+```ts
+process.on("SIGTERM", async () => {
+  console.log("Shutting down...");
+  await db.disconnect();
+  process.exit(0);
+});
+```
+
+Finally, **start simple**. You can always add complexity — microservices, message brokers, Kubernetes — *after* you outgrow the basics.
+
+---
+
+## Wrapping up
+
+Backend work isn’t about frameworks or syntax — it’s about reliability. Whether you’re shipping Node, Python, or Go, these fundamentals will hold up:
+
+- Design APIs that make sense to humans.  
+- Treat your database like a contract, not a dumping ground.  
+- Validate everything. Log everything. Break nothing.  
+
+Do that, and your backend will not only scale — it’ll *age gracefully*, even as your product and team evolve.

@@ -1,0 +1,196 @@
+---
+title: "Smart Contracts with Solidity: From Zero to Deploy"
+summary: "Getting started with Solidity, the Ethereum Virtual Machine (EVM), and deploying your first secure smart contract."
+publishedAt: "2025-02-05"
+tag: "Solidity"
+---
+
+If you’ve ever played around with blockchain or wanted to build something on Ethereum, you’ve probably heard of **Solidity**. It’s the language behind most smart contracts — the bits of code that live on-chain and hold real money, NFTs, and digital rules of ownership.
+
+Unlike your usual backend code, what you deploy here is **immutable** — it runs forever, visible to everyone, and can’t be easily patched if something goes wrong. So security and correctness aren’t optional — they’re everything.
+
+Let’s walk through the essentials: how Solidity works, how to write your first contract, and how to deploy it safely.
+
+---
+
+## Understanding the EVM and Solidity
+
+Solidity is a statically typed language that compiles down to bytecode the **Ethereum Virtual Machine (EVM)** can execute. Many blockchains besides Ethereum (like Polygon, Arbitrum, Base, and Avalanche) are *EVM-compatible*. That means once you know Solidity, your contracts can run across multiple networks with minimal changes.
+
+A few concepts to keep in mind early:
+
+- **State** → Persistent data stored on-chain (like balances, owners, configurations).  
+- **Gas** → Every operation you run on-chain costs Ether (ETH). Think of it as computation rent — loops and storage writes are expensive.
+- **Messages** → Function calls, either from users (externally owned accounts) or from other smart contracts.
+
+Here’s a visual way to think about it: The blockchain is a shared computer. Each smart contract is a *program* on it, with its own memory (called *storage*) and a public API that anyone can call.
+
+---
+
+## Writing your first contract
+
+Let’s start small. Here’s a classic “Counter” contract—simple enough to grasp, but it teaches the fundamentals: state, functions, and deployment.
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+contract Counter {
+    uint256 public count;
+
+    // Increments the counter by 1
+    function increment() public {
+        count += 1;
+    }
+
+    // Decrements the counter by 1
+    function decrement() public {
+        require(count > 0, "Counter: cannot go below zero");
+        count -= 1;
+    }
+}
+```
+
+A few takeaways:
+
+- `uint256 public count;` automatically creates a public getter, so you don’t need to write a separate function to read it.
+- The `require` statement reverts the transaction if a condition fails — like an assertion in traditional code.
+- Once deployed, you can call `increment()` or `decrement()` via a wallet or frontend, and the blockchain will store every change.
+
+---
+
+### Testing with Hardhat
+
+If you use **Hardhat** (a modern Solidity dev environment), your folder might look like this:
+
+```
+my-contract/
+  ├─ contracts/
+  │   └─ Counter.sol
+  ├─ test/
+  │   └─ Counter.ts
+  ├─ hardhat.config.ts
+```
+
+Install dependencies:
+
+```bash
+npm install --save-dev hardhat ethers chai
+```
+
+Run your tests:
+
+```bash
+npx hardhat test
+```
+
+And a simple test file might look like:
+
+```ts
+import { ethers } from "hardhat";
+import { expect } from "chai";
+
+describe("Counter", function () {
+  it("should increment and decrement correctly", async function () {
+    const Counter = await ethers.getContractFactory("Counter");
+    const counter = await Counter.deploy();
+    await counter.waitForDeployment();
+
+    await counter.increment();
+    expect(await counter.count()).to.equal(1);
+
+    await counter.decrement();
+    expect(await counter.count()).to.equal(0);
+  });
+});
+```
+
+Testing is crucial here. Once you deploy to the blockchain, mistakes can’t be patched with a quick hotfix.
+
+---
+
+## Security habits that save you (and your users)
+
+Smart contract bugs are *expensive*. One small oversight can drain all your funds. Here are the key patterns I follow on every project:
+
+- **Avoid reentrancy.** Always follow the *checks-effects-interactions* pattern — update your state *before* calling external contracts. Or just use OpenZeppelin’s `ReentrancyGuard`.
+- **Use SafeMath principles.** Solidity 0.8+ now handles overflow checks automatically, so you’re protected by default — but don’t rely on it blindly in older versions.
+- **Enforce access control.** Don’t let anyone call your admin-only functions. Tools like OpenZeppelin’s `Ownable` or `AccessControl` make this easy.
+- **Prefer pull over push for payments.** Instead of automatically sending ETH to users, let them withdraw it themselves. It avoids reentrancy attacks and unexpected gas issues.
+
+Here’s an example of a safe “bank” pattern:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+contract SimpleVault {
+    mapping(address => uint256) public balances;
+
+    // Deposit ETH into the vault
+    function deposit() external payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    // Withdraw your balance safely
+    function withdraw() external {
+        uint256 amount = balances[msg.sender];
+        require(amount > 0, "Nothing to withdraw");
+
+        balances[msg.sender] = 0;
+        (bool sent, ) = msg.sender.call{value: amount}("");
+        require(sent, "Withdraw failed");
+    }
+}
+```
+
+This contract follows the right flow:
+1. Check conditions,
+2. Update state,
+3. Then perform the external call.
+
+That order avoids reentrancy attacks — like the one that famously broke The DAO hack in 2016.
+
+---
+
+## Tooling and deployment
+
+There are two main frameworks developers love: **Hardhat** and **Foundry**. Hardhat (JavaScript/TypeScript-based) is beginner-friendly and integrates well with frontends. Foundry (Rust-based) is lighter and blazing fast, great for advanced users.
+
+Once your contract is tested, deploy it to a *testnet* before daring to go on mainnet. Common testnets:
+- **Sepolia** (Ethereum)
+- **Base Sepolia** (for Coinbase’s L2)
+- **Polygon Amoy**
+- **Arbitrum Sepolia**
+
+Here’s a bare-bones Hardhat deploy script:
+
+```ts
+import { ethers } from "hardhat";
+
+async function main() {
+  const Counter = await ethers.getContractFactory("Counter");
+  const counter = await Counter.deploy();
+  await counter.waitForDeployment();
+  console.log("Counter deployed to:", await counter.getAddress());
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exitCode = 1;
+});
+```
+
+Finally, connect your deployed contract with users using **ethers.js** or **viem** in your frontend, or test interactively in **Remix IDE** if you’re just learning.
+
+---
+
+## Wrapping up
+
+Solidity isn’t hard once you understand the environment you’re playing in. The EVM is simple but unforgiving: what you deploy is immutable, and bugs cost real money. That’s why small, test-first development pays off so much here.
+
+Start with toy projects — counters, voting contracts, or simple vaults. Experiment on testnets. Audit your own code (and your friends’). Each time you deploy something, you’ll get a better sense of how on-chain logic actually behaves.
+
+Building on Ethereum is like learning to code all over again — challenging at first, but incredibly rewarding once your logic lives *on-chain* for the world to verify.
+
+Happy deploying 🔒🚀

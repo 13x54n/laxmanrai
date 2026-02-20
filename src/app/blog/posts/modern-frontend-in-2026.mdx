@@ -1,0 +1,220 @@
+---
+title: "Modern Frontend in 2026: React, Next.js, and Beyond"
+summary: "A practical look at building fast, accessible UIs with React, Next.js, TypeScript, and the tools that actually ship."
+publishedAt: "2026-02-15"
+tag: "Frontend"
+---
+
+Every few years, frontend development feels like it’s reinventing itself. But at this point — early 2026 — the dust has settled (a bit). The modern stack for serious web apps is **React**, **Next.js**, and **TypeScript**. Add a sprinkling of good design systems, and you’ve got the recipe most teams use for production apps today.
+
+This post isn’t about hype. It’s about the real tools that make your UI fast, reliable, and pleasant to build with.
+
+---
+
+## React and component architecture
+
+After more than a decade, React’s component model is still the heart of modern frontend work. It’s simple but surprisingly flexible. The big shift in recent years has been **server components** and **colocation** — keeping logic, data, and markup bundled together in one cohesive block of code.
+
+That might sound abstract, but let’s break it down.
+
+Here’s how a small, modern component might look in 2026:
+
+```tsx
+"use client";
+
+import { useState } from "react";
+
+export function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div className="space-y-2">
+      <p className="text-lg font-medium">Count: {count}</p>
+      <button
+        className="rounded bg-blue-500 px-3 py-1 text-white hover:bg-blue-600"
+        onClick={() => setCount((c) => c + 1)}
+      >
+        Increment
+      </button>
+    </div>
+  );
+}
+```
+
+A few small things to note:
+- Everything you see here is **encapsulated** — logic, styles, and state all live together.
+- The `"use client"` directive tells Next.js that this file should run on the client, not the server.
+- With **hooks**, you can colocate state and logic without the old class component overhead.
+
+When working at scale, the key lesson is **small, focused components**. Each should handle one specific responsibility. Shared UI patterns should go into a design system (or at least a `/components/ui` folder). React’s strength lies in composability — leverage it.
+
+---
+
+## Next.js: your full‑stack foundation
+
+If React handles rendering, **Next.js** handles everything else: routing, data fetching, server-side logic, API routes, and static optimization. It’s the framework that turned React from a UI library into a full-stack solution.
+
+The latest **App Router** (introduced in Next.js 13+) changed how we think about rendering. Components can now run partly on the server and partly on the client — giving you faster initial page loads with less client-side JavaScript.
+
+For example, a hybrid page might look like this:
+
+```tsx
+// app/posts/page.tsx
+import { getPosts } from "@/lib/api";
+import { PostCard } from "@/components/PostCard";
+
+export const revalidate = 60; // ISR: revalidate every 60 seconds
+
+export default async function PostsPage() {
+  const posts = await getPosts(); // Runs on the server
+  return (
+    <div className="grid gap-4">
+      {posts.map((post) => (
+        <PostCard post={post} key={post.id} />
+      ))}
+    </div>
+  );
+}
+```
+
+This function runs **on the server**, not in the browser. That means:
+- No `useEffect` for data fetching.
+- No loading spinners just to hydrate data.
+- No sensitive credentials leaking to the client.
+
+And if you need backend logic — say, a route for submitting a form — you can do this in the same project:
+
+```ts
+// app/api/contact/route.ts
+import { NextResponse } from "next/server";
+
+export async function POST(req: Request) {
+  const { email, message } = await req.json();
+
+  if (!email || !message) {
+    return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+  }
+
+  // ...send email or log to a database
+
+  return NextResponse.json({ success: true });
+}
+```
+
+That’s backend and frontend in a single codebase, sharing types and logic. For most teams, that’s all you need to build, iterate, and deploy fast.
+
+---
+
+## TypeScript on the frontend
+
+TypeScript has officially gone from “nice-to-have” to “don’t-skip-this.” It may feel verbose at first, but it pays dividends as your app grows.
+
+In React, types are most useful in **three places**:
+1. Component props
+2. API responses
+3. Form data or state objects
+
+Here’s a quick example:
+
+```tsx
+type Todo = {
+  id: string;
+  title: string;
+  completed: boolean;
+};
+
+type TodoListProps = {
+  items: Todo[];
+  onToggle: (id: string) => void;
+};
+
+export function TodoList({ items, onToggle }: TodoListProps) {
+  return (
+    <ul className="space-y-2">
+      {items.map((item) => (
+        <li
+          key={item.id}
+          className="flex items-center justify-between border-b pb-1"
+        >
+          <span>{item.title}</span>
+          <input
+            type="checkbox"
+            checked={item.completed}
+            onChange={() => onToggle(item.id)}
+          />
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+With TypeScript, a wrong prop or typo shows up *instantly* in your editor. Combine this with strict mode (`"strict": true` and `"strictNullChecks": true` in `tsconfig.json`) and you’ll catch most bugs *before* they ever hit production.
+
+Beyond safety, typed props become living documentation — you can hover over a component and instantly know what it expects.
+
+---
+
+## What to prioritize in 2026
+
+There’s no shortage of shiny new tools. But what consistently matters most in production apps hasn’t changed much:
+
+### 1. Performance
+
+Modern tools like React Server Components and Next.js 14’s streaming updates make performance easier — but you still need to keep an eye on Core Web Vitals.
+
+- Use **code splitting** (`dynamic` imports).
+- Enable image optimization with Next’s `<Image />`.
+- Measure using `web-vitals` or the built-in `next/script` reporting.
+
+Small wins, big UX impact.
+
+### 2. Accessibility
+
+Fast doesn’t matter if your app isn’t usable by everyone.
+- Use **semantic HTML**: buttons for actions, links for navigation.
+- Manage **focus** when modals, drawers, or routes change.
+- Rely on **ARIA** only when you can’t use native semantics.
+
+I like running the [axe DevTools](https://www.deque.com/axe/devtools/) browser plugin after most UI changes — it catches common issues automatically.
+
+### 3. Responsive design
+
+We’re finally past the breakpoint wars. Modern CSS and utility frameworks like **Tailwind CSS** or **Vanilla Extract** make responsive layouts far cleaner.
+
+Try simple patterns like:
+
+```tsx
+<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+  {/* cards, products, etc. */}
+</div>
+```
+
+It’s readable, scales on every device, and plays nicely with design systems.
+
+---
+
+## Beyond the basics
+
+Once your foundations are solid — performance, accessibility, responsiveness — that’s when you layer in state management and tooling.
+
+In 2026, these are solid defaults:
+- **Zustand** or **Jotai** for lightweight state.
+- **TanStack Query** for async data and caching.
+- **Playwright** or **Vitest** for reliable tests.
+- **ESLint** + **Prettier** (or **Biome**) to keep everyone’s code consistent.
+
+And when you finally deploy? Platforms like **Vercel** or **Netlify** handle scaling, caching, and preview deploys so you can stay focused on building.
+
+---
+
+## Wrapping up
+
+The modern frontend isn’t about chasing trends; it’s about **stability**. React gives us the foundation; Next.js gives us structure; TypeScript gives us safety. Together, they’ve become the dependable core for almost anything you’d want to ship to the web.
+
+Whether you’re building a tiny side project or a global SaaS app, focus on:
+- Correctness first.
+- Performance always.
+- Accessibility everywhere.
+
+Everything else — animations, fancy bundlers, exotic frameworks — can come later. The fundamentals are what make great frontends last.

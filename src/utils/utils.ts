@@ -19,6 +19,8 @@ type Metadata = {
   tag?: string;
   team: Team[];
   link?: string;
+  /** When true, post is hidden from blog UI (list, sitemap, RSS). Used for sample/docs posts. */
+  sample?: boolean;
 };
 
 import { notFound } from "next/navigation";
@@ -49,6 +51,7 @@ function readMDXFile(filePath: string) {
     tag: data.tag || [],
     team: data.team || [],
     link: data.link || "",
+    sample: data.sample === true,
   };
 
   return { metadata, content };
@@ -71,4 +74,9 @@ function getMDXData(dir: string) {
 export function getPosts(customPath = ["", "", "", ""]) {
   const postsDir = path.join(process.cwd(), ...customPath);
   return getMDXData(postsDir);
+}
+
+/** Blog posts only: excludes posts with metadata.sample === true (so they don't appear in blog UI). */
+export function getBlogPosts() {
+  return getPosts(["src", "app", "blog", "posts"]).filter((post) => !post.metadata.sample);
 }

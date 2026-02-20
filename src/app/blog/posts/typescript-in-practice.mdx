@@ -1,0 +1,246 @@
+---
+title: "TypeScript in Practice: Types That Actually Help"
+summary: "TypeScript can be your best debugging partner or your biggest headache. Here’s how to make it work for you—catching bugs early, improving refactors, and documenting your code without fighting the type system."
+publishedAt: "2025-02-01"
+tag: "TypeScript"
+---
+
+TypeScript gets a bad rap sometimes. Some devs love it, others swear it slows them down. Personally? I’ve found it’s all about *how you use it*. Set it up right, and it’s like having a friendly compiler that catches dumb mistakes and helps you refactor safely. Set it up poorly, and it can feel like a bureaucrat yelling about every tiny detail.
+
+After working on a few large TypeScript projects—both frontend and backend—here are some hard-learned lessons on how to get **types that actually help**.
+
+---
+
+## Start strict, stay consistent
+
+I learned this one the hard way: starting a project *without* strict mode is basically an IOU to your future self. You’ll end up chasing type errors forever.
+
+In your `tsconfig.json`, flip this on right away:
+
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true
+  }
+}
+```
+
+That `"strict": true` flag is the magic—it enables all the smart checks you actually want: things like missing null checks, incorrect return types, or typos in property names. Yes, it’ll yell at you at first. Let it. It’s just trying to point out where your code *could* break later.
+
+Here’s a simple example:
+
+```ts
+function getUserName(user?: { name: string }) {
+  return user.name; // ❌: Object is possibly 'undefined'
+}
+```
+
+TypeScript immediately warns you. Without strict mode, this would compile fine—and blow up at runtime. Fix it properly:
+
+```ts
+function getUserName(user?: { name: string }) {
+  return user ? user.name : "Anonymous";
+}
+```
+
+Now you can sleep at night.
+
+If you’re on a team, create a shared base config (`@yourorg/tsconfig-base`) so everyone’s on the same page. It avoids those “why doesn’t this compile on my machine?” moments.
+
+---
+
+## Model your domain with intention
+
+Once your project grows, types become a form of documentation. Good types tell a story about your domain—the entities that matter to your product.
+
+For instance, I love defining clear interfaces for core data models:
+
+```ts
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: "admin" | "user" | "guest";
+}
+
+type ApiResponse<T> = {
+  data: T;
+  errors?: string[];
+};
+```
+
+Then you can reuse them everywhere—frontend, backend, tests, mocks—without guessing the shape.
+
+```ts
+async function fetchUser(id: number): Promise<ApiResponse<User>> {
+  const res = await fetch(`/api/users/${id}`);
+  return res.json();
+}
+```
+
+**Pro tip:** Avoid `any`. It’s tempting (“I’ll fix it later!”), but it’s basically saying “turn off TypeScript here.” Instead, use `unknown` when you truly don’t know the type and then narrow it.
+
+```ts
+function printValue(value: unknown) {
+  if (typeof value === "string") {
+    console.log(value.toUpperCase());
+  } else {
+    console.log("Not a string");
+  }
+}
+```
+
+That kind of pattern forces you to be honest about what you’re handling.
+
+---
+
+## Use generics to reduce repetition
+
+The first time I wrote a generic in TypeScript, it looked like black magic. But once it clicked, it changed everything. Generics help you stay DRY (Don’t Repeat Yourself) without giving up type safety.
+
+Here’s a simple example. Say you need a function to fetch data from an API and parse the JSON. You could do this:
+
+```ts
+async function fetchData<T>(url: string): Promise<T> {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Failed to fetch ${url}`);
+  return res.json() as Promise<T>;
+}
+```
+
+Now you can call it with *any* type:
+
+```ts
+type Post = { id: number; title: string; content: string };
+
+async function loadPost(id: number) {
+  const post = await fetchData<Post>(`/api/posts/${id}`);
+  console.log(post.title);
+}
+```
+
+The cool part? If the API shape changes, TypeScript immediately flags every place that used `Post` incorrectly. A future-proof safety net.
+
+If you want to get fancy, you can even constrain your generics:
+
+```ts
+function getValue<T extends object, K extends keyof T>(obj: T, key: K): T[K] {
+  return obj[key];
+}
+
+const user = { id: 1, name: "Alice" };
+const name = getValue(user, "name"); // string
+// const invalid = getValue(user, "age"); // ❌ not allowed
+```
+
+It feels weirdly satisfying when you see that red squiggly line *before* your code crashes.
+
+---
+
+## Use it across the stack
+
+If you’ve ever had a “frontend type doesn’t match the backend response” bug, TypeScript will be your hero here. Seriously, shared types are a game changer.
+
+### Frontend: props that explain themselves
+
+For React, strong props mean fewer runtime bugs:
+
+```tsx
+type ButtonProps = {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+};
+
+function Button({ label, onClick, disabled = false }: ButtonProps) {
+  return (
+    <button onClick={onClick} disabled={disabled}>
+      {label}
+    </button>
+  );
+}
+```
+
+Mess up the prop types when using the component, and TypeScript tells you immediately.
+
+### Backend: APIs that can’t drift
+
+On the backend, types help keep your contracts stable. You can *literally* share the same types between frontend and backend.
+
+```ts
+// shared/types.ts
+export interface CreateUserRequest {
+  name: string;
+  email: string;
+}
+
+export interface CreateUserResponse {
+  id: number;
+  name: string;
+  email: string;
+}
+```
+
+Then, in your Express app:
+
+```ts
+// backend/routes/users.ts
+import type { CreateUserRequest, CreateUserResponse } from "../../shared/types";
+import express, { Request, Response } from "express";
+
+const app = express();
+
+app.post(
+  "/users",
+  (req: Request<{}, {}, CreateUserRequest>, res: Response<CreateUserResponse>) => {
+    const newUser = { id: 1, ...req.body };
+    res.json(newUser);
+  }
+);
+```
+
+...and on the frontend:
+
+```ts
+async function createUser(data: CreateUserRequest) {
+  const res = await fetch("/users", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  return (await res.json()) as CreateUserResponse;
+}
+```
+
+If you change the backend response, the frontend will break *at build time*, not runtime. That’s the dream.
+
+---
+
+## Let inference work for you
+
+One of the most underrated features of TypeScript is **type inference**. You don’t need to annotate *everything*. In fact, sometimes you shouldn’t.
+
+These are all perfectly typed without explicit annotations:
+
+```ts
+const count = 42; // number
+const fruits = ["apple", "orange"]; // string[]
+const user = { id: 1, active: true }; // { id: number; active: boolean }
+```
+
+Where explicit types shine is at **boundaries**—API responses, config files, external data. Inside your app logic, let TypeScript infer and keep your code clean.
+
+---
+
+## Wrapping up
+
+TypeScript isn’t about writing more code—it’s about writing **safer** code that ages better. It’s your future self looking out for your present self.
+
+If you start strict, model your domain thoughtfully, trust inference, and share types where it matters, TypeScript stops feeling like a compiler cop and starts feeling like an extension of your thinking process.
+
+It’s not perfect (you’ll still curse at the type system once in a while), but when a big refactor goes smoothly and everything still works, you’ll know it’s worth it.
+
+```
