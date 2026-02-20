@@ -9,7 +9,7 @@ const person: Person = {
   avatar: "/images/avatar.jpg",
   email: "laxmanrai0411@gmail.com",
   location: "America/Toronto", // Expecting the IANA time zone identifier, e.g., 'Europe/Vienna'
-  languages: ["JavaScript", "Solidity", "HTML5/CSS3", "AWS", "Node.js", "MongoDB"], // optional: Leave the array empty if you don't want to display languages
+  languages: ["JavaScript", "Solidity", "HTML5/CSS3", "AWS", "Node.js", "MongoDB", "Next.js"], // optional: Leave the array empty if you don't want to display languages
 };
 
 const newsletter: Newsletter = {
@@ -101,12 +101,12 @@ const about: About = {
     title: "Work Experience",
     experiences: [
       {
-        company: "FLY",
+        company: "Ming Open Web Headquarters",
         timeframe: "2022 - Present",
-        role: "Senior Design Engineer",
+        role: "Full Stack Web Developer",
         achievements: [
           <>
-            Redesigned the UI/UX for the FLY platform, resulting in a 20% increase in user
+            Redesigned the UI/UX for the Ming Open Web Headquarters platform, resulting in a 20% increase in user
             engagement and 30% faster load times.
           </>,
           <>
@@ -117,42 +117,53 @@ const about: About = {
         images: [
           // optional: leave the array empty if you don't want to display images
           {
-            src: "/images/projects/project-01/cover-01.jpg",
-            alt: "Once UI Project",
+            src: "/images/projects/minghq/cover.png",
+            alt: "Ming Open Web Headquarters",
+            width: 16,
+            height: 9,
+          },
+          {
+            src: "/images/projects/minghq/cover1.png",
+            alt: "Ming Open Web Headquarters",
             width: 16,
             height: 9,
           },
         ],
       },
       {
-        company: "Creativ3",
-        timeframe: "2018 - 2022",
-        role: "Lead Designer",
+        company: "Hult Prize Foundation",
+        timeframe: "2022",
+        role: "Marketing Design Manager",
         achievements: [
           <>
-            Developed a design system that unified the brand across multiple platforms, improving
-            design consistency by 40%.
+            Developing and executing marketing design strategies that align with the overall marketing objectives of the organization.
           </>,
           <>
-            Led a cross-functional team to launch a new product line, contributing to a 15% increase
-            in overall company revenue.
+            Leading and managing a team of designers to ensure timely delivery of high-quality design projects.
+          </>,
+          <>
+            Ensuring that all design work is consistent with the organization's brand guidelines and visual identity.
           </>,
         ],
-        images: [],
+        images: [
+          // optional: leave the array empty if you don't want to display images
+          {
+            src: "/images/projects/hultprize/cover.jpeg",
+            alt: "Hult Prize Foundation",
+            width: 9,
+            height: 9,
+          },
+        ],
       },
     ],
   },
   studies: {
     display: true, // set to false to hide this section
-    title: "Studies",
+    title: "Education",
     institutions: [
       {
-        name: "University of Jakarta",
-        description: <>Studied software engineering.</>,
-      },
-      {
-        name: "Build the Future",
-        description: <>Studied online marketing and personal branding.</>,
+        name: "Nagarjuna College of Information Technology",
+        description: <>Studied Bachelor in Computer Science and Information Technology.</>,
       },
     ],
   },
@@ -161,55 +172,87 @@ const about: About = {
     title: "Technical skills",
     skills: [
       {
-        title: "Figma",
-        description: <>Able to prototype in Figma with Once UI with unnatural speed.</>,
+        title: "Full Stack Web Development",
+        description: <>Able to build web applications from scratch using modern technologies.</>,
         tags: [
-          {
-            name: "Figma",
-            icon: "figma",
-          },
-        ],
-        // optional: leave the array empty if you don't want to display images
-        images: [
-          {
-            src: "/images/projects/project-01/cover-02.jpg",
-            alt: "Project image",
-            width: 16,
-            height: 9,
-          },
-          {
-            src: "/images/projects/project-01/cover-03.jpg",
-            alt: "Project image",
-            width: 16,
-            height: 9,
-          },
-        ],
-      },
-      {
-        title: "Next.js",
-        description: <>Building next gen apps with Next.js + Once UI + Supabase.</>,
-        tags: [
-          {
-            name: "JavaScript",
-            icon: "javascript",
-          },
           {
             name: "Next.js",
             icon: "nextjs",
           },
           {
-            name: "Supabase",
-            icon: "supabase",
+            name: "React.js",
+            icon: "reactjs",
+          },
+          {
+            name: "Tailwind CSS",
+            icon: "tailwindcss",
+          },
+          {
+            name: "Node.js",
+            icon: "nodejs",
+          },
+          {
+            name: "MongoDB",
+            icon: "mongodb",
+          },
+          {
+            name: "AWS",
+            icon: "aws",
+          },
+          {
+            name: "DNS Configuration",
+            icon: "dns",
+          },
+          {
+            name: "Git",
+            icon: "github",
+          },  
+        ],
+        // optional: leave the array empty if you don't want to display images
+        images: [
+          // {
+          //   src: "/images/projects/project-01/cover-02.jpg",
+          //   alt: "Project image",
+          //   width: 16,
+          //   height: 9,
+          // },
+          // {
+          //   src: "/images/projects/project-01/cover-03.jpg",
+          //   alt: "Project image",
+          //   width: 16,
+          //   height: 9,
+          // },
+        ],
+      },
+      {
+        title: "Web3 Development",
+        description: <>Building web3 applications using modern technologies.</>,
+        tags: [
+          {
+            name: "Solidity",
+            icon: "solidity",
+          },
+          {
+            name: "Wallet Configuration",
+            icon: "wallet",
+          },
+          {
+            name: "Web3.js",
+            icon: "web3js",
+          },
+          {
+            name: "Ethers.js",
+            icon: "ethersjs",
           },
         ],
         // optional: leave the array empty if you don't want to display images
         images: [
-          {
-            src: "/images/projects/project-01/cover-04.jpg",
-            alt: "Project image",
-            width: 16,
-            height: 9,
-          },
+          // {
+          //   src: "/images/projects/project-01/cover-04.jpg",
+          //   alt: "Project image",
+          //   width: 16,
+          //   height: 9,
+          // },
         ],
       },
     ],
