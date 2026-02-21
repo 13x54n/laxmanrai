@@ -14,7 +14,7 @@ import {
 import { home } from "./index";
 
 // IMPORTANT: Replace with your own domain address - it's used for SEO in meta tags and schema
-const baseURL: string = "https://demo.magic-portfolio.com";
+const baseURL: string = "https://laxmanrai-eta.vercel.app";
 
 const routes: RoutesConfig = {
   "/": true,
@@ -188,16 +188,16 @@ const mailchimp: MailchimpConfig = {
 const schema: SchemaConfig = {
   logo: "",
   type: "Organization",
-  name: "Once UI",
+  name: "Laxman Rai",
   description: home.description,
-  email: "lorant@once-ui.com",
+  email: "laxmanrai0411@gmail.com"
 };
 
-// social links
+// social links (use empty string "" if you don't use a platform)
 const sameAs: SameAsConfig = {
-  threads: "https://www.threads.com/@once_ui",
-  linkedin: "https://www.linkedin.com/company/once-ui/",
-  discord: "https://discord.com/invite/5EyAQ4eNdS",
+  threads: "",
+  linkedin: "https://www.linkedin.com/in/lexworld",
+  discord: "",
 };
 
 // social sharing configuration for blog posts

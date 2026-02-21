@@ -22,7 +22,7 @@ export async function GET(request: Request) {
     throw new Error("failed to load font data");
   }
 
-  return new ImageResponse(
+  const imageResponse = new ImageResponse(
     <div
       style={{
         display: "flex",
@@ -115,4 +115,11 @@ export async function GET(request: Request) {
       ],
     },
   );
+
+  // Allow platforms to re-fetch after you change avatar or person (they often cache aggressively)
+  imageResponse.headers.set(
+    "Cache-Control",
+    "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400",
+  );
+  return imageResponse;
 }
