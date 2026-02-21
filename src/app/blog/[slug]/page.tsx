@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import { CustomMDX, ScrollToHash } from "@/components";
 import {
-  Meta,
   Schema,
   Column,
   Heading,
@@ -45,17 +44,26 @@ export async function generateMetadata({
 
   if (!post) return {};
 
-  const baseMeta = Meta.generate({
+  const path = `${blog.path}/${post.slug}`;
+  const url = `${baseURL.replace(/\/$/, "")}${path.startsWith("/") ? path : `/${path}`}`;
+
+  // Blog post metadata without any OG/Twitter image (text-only share preview)
+  return {
     title: post.metadata.title,
     description: post.metadata.summary,
-    baseURL: baseURL,
-    path: `${blog.path}/${post.slug}`,
-  });
-  // No OG image for blog shares
-  return {
-    ...baseMeta,
-    openGraph: { ...baseMeta.openGraph, images: [] },
-    twitter: { ...baseMeta.twitter, images: [] },
+    openGraph: {
+      title: post.metadata.title,
+      description: post.metadata.summary,
+      url,
+      type: "article",
+      // no images key – no og:image tag
+    },
+    twitter: {
+      card: "summary",
+      title: post.metadata.title,
+      description: post.metadata.summary,
+      // no images – text-only card
+    },
   };
 }
 
