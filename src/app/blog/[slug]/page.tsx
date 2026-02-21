@@ -45,17 +45,18 @@ export async function generateMetadata({
 
   if (!post) return {};
 
-  const ogImage =
-    post.metadata.image ||
-    `/api/og/generate?title=${encodeURIComponent(post.metadata.title)}&author=${encodeURIComponent(person.name)}&role=${encodeURIComponent(person.role)}&avatar=${encodeURIComponent(person.avatar)}`;
-
-  return Meta.generate({
+  const baseMeta = Meta.generate({
     title: post.metadata.title,
     description: post.metadata.summary,
     baseURL: baseURL,
-    image: ogImage,
     path: `${blog.path}/${post.slug}`,
   });
+  // No OG image for blog shares
+  return {
+    ...baseMeta,
+    openGraph: { ...baseMeta.openGraph, images: [] },
+    twitter: { ...baseMeta.twitter, images: [] },
+  };
 }
 
 export default async function Blog({ params }: { params: Promise<{ slug: string | string[] }> }) {
@@ -88,10 +89,6 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
             description={post.metadata.summary}
             datePublished={post.metadata.publishedAt}
             dateModified={post.metadata.publishedAt}
-            image={
-              post.metadata.image ||
-              `/api/og/generate?title=${encodeURIComponent(post.metadata.title)}&author=${encodeURIComponent(person.name)}&role=${encodeURIComponent(person.role)}&avatar=${encodeURIComponent(person.avatar)}`
-            }
             author={{
               name: person.name,
               url: `${baseURL}${about.path}`,
