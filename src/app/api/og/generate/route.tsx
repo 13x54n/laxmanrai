@@ -3,10 +3,16 @@ import { baseURL } from "@/resources";
 import { person } from "@/resources/content";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export async function GET(request: Request) {
   let url = new URL(request.url);
   let title = url.searchParams.get("title") || "Portfolio";
+  // Use URL params when present (set by blog/work pages) so share image always matches deployed content
+  const authorName = url.searchParams.get("author") || person.name;
+  const authorRole = url.searchParams.get("role") || person.role;
+  const avatarPath = url.searchParams.get("avatar") || person.avatar;
 
   async function loadGoogleFont(font: string) {
     const url = `https://fonts.googleapis.com/css2?family=${font}`;
@@ -64,7 +70,7 @@ export async function GET(request: Request) {
           }}
         >
           <img
-            src={baseURL + person.avatar}
+            src={baseURL + avatarPath}
             style={{
               width: "12rem",
               height: "12rem",
@@ -87,7 +93,7 @@ export async function GET(request: Request) {
                 textWrap: "balance",
               }}
             >
-              {person.name}
+              {authorName}
             </span>
             <span
               style={{
@@ -98,7 +104,7 @@ export async function GET(request: Request) {
                 opacity: "0.6",
               }}
             >
-              {person.role}
+              {authorRole}
             </span>
           </div>
         </div>

@@ -47,7 +47,7 @@ export async function generateMetadata({
 
   const ogImage =
     post.metadata.image ||
-    `/api/og/generate?title=${encodeURIComponent(post.metadata.title)}&author=${encodeURIComponent(person.name)}`;
+    `/api/og/generate?title=${encodeURIComponent(post.metadata.title)}&author=${encodeURIComponent(person.name)}&role=${encodeURIComponent(person.role)}&avatar=${encodeURIComponent(person.avatar)}`;
 
   return Meta.generate({
     title: post.metadata.title,
@@ -90,7 +90,7 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
             dateModified={post.metadata.publishedAt}
             image={
               post.metadata.image ||
-              `/api/og/generate?title=${encodeURIComponent(post.metadata.title)}&author=${encodeURIComponent(person.name)}`
+              `/api/og/generate?title=${encodeURIComponent(post.metadata.title)}&author=${encodeURIComponent(person.name)}&role=${encodeURIComponent(person.role)}&avatar=${encodeURIComponent(person.avatar)}`
             }
             author={{
               name: person.name,
