@@ -14,7 +14,8 @@ import {
   Media,
   Line,
 } from "@once-ui-system/core";
-import { baseURL, about, blog, person } from "@/resources";
+import { baseURL, about, blog } from "@/resources";
+import { person } from "@/resources/content";
 import { formatDate } from "@/utils/formatDate";
 import { getBlogPosts } from "@/utils/utils";
 import { Metadata } from "next";
@@ -44,11 +45,15 @@ export async function generateMetadata({
 
   if (!post) return {};
 
+  const ogImage =
+    post.metadata.image ||
+    `/api/og/generate?title=${encodeURIComponent(post.metadata.title)}&author=${encodeURIComponent(person.name)}`;
+
   return Meta.generate({
     title: post.metadata.title,
     description: post.metadata.summary,
     baseURL: baseURL,
-    image: post.metadata.image || `/api/og/generate?title=${post.metadata.title}`,
+    image: ogImage,
     path: `${blog.path}/${post.slug}`,
   });
 }
@@ -85,7 +90,7 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
             dateModified={post.metadata.publishedAt}
             image={
               post.metadata.image ||
-              `/api/og/generate?title=${encodeURIComponent(post.metadata.title)}`
+              `/api/og/generate?title=${encodeURIComponent(post.metadata.title)}&author=${encodeURIComponent(person.name)}`
             }
             author={{
               name: person.name,
