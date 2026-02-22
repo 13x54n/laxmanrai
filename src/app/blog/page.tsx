@@ -34,7 +34,7 @@ export default function Blog() {
       </Heading>
       <Column fillWidth flex={1} gap="40">
         <Posts range={[1, 3]} columns="2" thumbnail direction="column" />
-        <Mailchimp marginBottom="l" />
+        {/* <Mailchimp marginBottom="l" /> */}
         <Heading as="h2" variant="heading-strong-xl" marginLeft="l">
           Earlier posts
         </Heading>

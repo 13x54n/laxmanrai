@@ -1,0 +1,466 @@
+---
+title: "Week 1: Practice JS and React.js from till I land the job series."
+summary: "Detailed 7‑day “mini‑course” plan for mastering the exact JavaScript topics and practice."
+publishedAt: "2026-02-22"
+tag: "Till I land the job"
+---
+
+## Overall Structure and Goals for the Week
+
+By the end of this week, you should be able to:
+
+- Solve JS coding exercises in 20–30 minutes using just a text editor and console.  
+- Confidently explain variables, scope, functions, arrays (map/filter/reduce), objects, promises, async/await, and basic type coercion.  
+- Implement and explain: a custom `map`, grouping even/odd numbers, removing duplicates, filtering users, deep cloning, closures, and converting callbacks to promises.  
+- Walk through core conceptual interview questions from a modern JS interview list. [Video Link](https://www.youtube.com/watch?v=kUTbEcO-lrk)
+
+Primary practice sources:
+
+- GeeksforGeeks – “JavaScript Fundamentals Coding Practice Problems.” [geeksforgeeks](https://www.geeksforgeeks.org/javascript/javascript-fundamentals-coding-practice-problems/)
+- GeeksforGeeks – “JavaScript Exercises, Practice Questions and Solutions” by topic. [geeksforgeeks](https://www.geeksforgeeks.org/javascript/practice-javascript-online/)
+- w3resource – “JavaScript basic – Exercises, Practice, Solution” + “JavaScript functions - Exercises, Practice, Solution.” [w3resource](https://www.w3resource.com/javascript-exercises/javascript-basic-exercises.php)
+- A 2025‑style JavaScript interview questions collection (e.g., GeeksforGeeks/CodeSignal/Intellipaat). [geeksforgeeks](https://www.geeksforgeeks.org/javascript/javascript-interview-questions/)
+
+Rule for the whole week:  
+For each topic:
+
+1. Read 10–15 min maximum.  
+2. Code 60–90 min (solutions closed at first).  
+3. Only then compare with provided solutions and adjust. [w3resource](https://www.w3resource.com/javascript-exercises/javascript-functions-exercises.php)
+
+***
+
+## Day 1 (Mon): Core JS Fundamentals – Variables, Types, Control Flow
+
+**Goal:** Refresh pure basics so the rest of the week is easier.
+
+### 1. Warm‑up: Syntax and basic problems
+
+- Spend ~20–30 minutes on GeeksforGeeks “JavaScript Fundamentals Coding Practice Problems” basic questions such as add two numbers, if/else, even or odd, positive/negative, basic strings. [geeksforgeeks](https://www.geeksforgeeks.org/javascript/javascript-fundamentals-coding-practice-problems/)
+- Do 5–8 problems directly in your editor (not online only), and run with Node or the browser console.
+
+Key ideas to focus on:
+
+- `let` vs `const` vs `var` and block/function scope.  
+- Primitive types (string, number, boolean, null, undefined, symbol, bigint) vs objects. [geeksforgeeks](https://www.geeksforgeeks.org/javascript/javascript-interview-questions/)
+- `if/else`, `switch`, `for`, `while`, `break`/`continue` patterns. [w3resource](https://www.w3resource.com/javascript-exercises/javascript-basic-exercises.php)
+
+### 2. Concept drill (15–20 min)
+
+Use a modern interview question list (2025‑style) and answer out loud or in notes: [codesignal](https://codesignal.com/blog/25-javascript-interview-questions-and-answers-from-basic-to-senior-level/)
+
+- What is JavaScript, typical uses, and how it runs (single‑threaded, interpreted/ JIT).  
+- Difference between `let`, `var`, and `const`.  
+- Data types, `typeof`, `null` vs `undefined`.  
+- What is hoisting? Give a simple example.
+
+Don’t worry about perfect wording yet; just make sure you can explain clearly.
+
+### 3. Small project idea (optional, 30–45 min)
+
+Build a **simple CLI calculator**:
+
+- Ask for two numbers and an operator (`+ - * /`).  
+- Use `if` or `switch` to compute and log the result.  
+- Add basic validation (e.g., division by zero, non‑number input).
+
+This glues your fundamentals together.
+
+***
+
+## Day 2 (Tue): Arrays and Objects – Real‑World Data Handling
+
+**Goal:** Get very comfortable with arrays and objects, including `map`, `filter`, `reduce`.
+
+### 1. Arrays and objects practice (60–90 min)
+
+Use GeeksforGeeks “JavaScript Exercises, Practice Questions and Solutions” sections for Numbers, Arrays, and Objects. Also mix a few w3resource basic tasks. [geeksforgeeks](https://www.geeksforgeeks.org/javascript/practice-javascript-online/)
+
+Focus on problems like:
+
+- Create and access arrays, push/pop, slice/splice.  
+- Iterate over arrays: `for`, `for...of`, `forEach`.  
+- Basic object creation, property access, adding/removing fields, iterating over keys. [geeksforgeeks](https://www.geeksforgeeks.org/javascript/practice-javascript-online/)
+
+Aim for:
+
+- 5–7 array exercises.  
+- 3–5 object exercises.
+
+Again, write in your own editor, then compare with reference solutions. [w3resource](https://www.w3resource.com/javascript-exercises/javascript-basic-exercises.php)
+
+### 2. Interview‑style tasks for the day
+
+Implement and test:
+
+1. **Group numbers into even/odd**
+
+```js
+function groupEvenOdd(numbers) {
+  const result = { even: [], odd: [] };
+  for (const n of numbers) {
+    if (n % 2 === 0) result.even.push(n);
+    else result.odd.push(n);
+  }
+  return result;
+}
+```
+
+Then extend:
+
+- Handle non‑numeric values (ignore or throw).  
+- Write 2–3 test arrays in code and log outputs.
+
+2. **Given array of users, return names of users older than 25**
+
+```js
+function getNamesOver25(users) {
+  return users
+    .filter(u => u.age > 25)
+    .map(u => u.name);
+}
+```
+
+Then:
+
+- Change the threshold.  
+- Add a `city` filter.  
+- Practice writing this without `filter`/`map` first, then rewrite using them.
+
+These mirror real interview tasks combining array methods and callback logic. [codesignal](https://codesignal.com/blog/25-javascript-interview-questions-and-answers-from-basic-to-senior-level/)
+
+***
+
+## Day 3 (Wed): Functions, Scope, `this`, Closures
+
+**Goal:** Understand functions deeply: declarations, expressions, arrow functions, `this`, and closures.
+
+### 1. Functions practice (45–60 min)
+
+Use w3resource “JavaScript functions – Exercises, Practice, Solution” (there are ~145 problems) for short function problems, like reverse a number, check palindrome, etc. [w3resource](https://www.w3resource.com/javascript-exercises/javascript-functions-exercises.php)
+
+- Solve 4–6 **small** function exercises.  
+- Pay attention to parameters, return values, and avoiding global variables.
+
+Then, add 2–3 callback‑style tasks from GeeksforGeeks’ “Functions” practice section. [geeksforgeeks](https://www.geeksforgeeks.org/javascript/practice-javascript-online/)
+
+### 2. Concept drill: scope, `this`, and closures (30–40 min)
+
+From a 2025 interview questions set, review and answer: [youtube](https://www.youtube.com/watch?v=MX48mv73jf8)
+
+- What is scope (global, function, block)?  
+- Difference between function declarations and function expressions.  
+- What is `this` in:  
+  - A regular function on an object.  
+  - A standalone function in strict mode.  
+  - An arrow function.  
+- What is a closure? Provide a simple example.
+
+Then implement:
+
+```js
+function createCounter(start = 0) {
+  let value = start;
+  return function() {
+    value++;
+    return value;
+  };
+}
+
+const counter = createCounter(5);
+console.log(counter()); // 6
+console.log(counter()); // 7
+```
+
+Explain in your own words:
+
+- Why `value` is remembered between calls.  
+- How this pattern is useful (e.g., encapsulating state, rate‑limiting, caching).
+
+Many modern JS interview resources emphasize closures, higher‑order functions, and `this` as core differentiators. [youtube](https://www.youtube.com/watch?v=MX48mv73jf8)
+
+***
+
+## Day 4 (Thu): Implementing `map`, Removing Duplicates, Deep Clone
+
+**Goal:** Build your own versions of common patterns and understand shallow vs deep copy.
+
+### 1. Implement your own `myMap` (45–60 min)
+
+Task: Implement `myMap` that behaves like `Array.prototype.map`.
+
+Steps:
+
+1. Write a simple function:
+
+```js
+function myMap(arr, callback) {
+  const result = [];
+  for (let i = 0; i < arr.length; i++) {
+    result.push(callback(arr[i], i, arr));
+  }
+  return result;
+}
+```
+
+2. Test it with:
+
+- Doubling numbers.  
+- Converting strings to uppercase.  
+- Extracting a property from an array of objects.
+
+3. Compare to how MDN or practice sites describe `map`—they pass `(element, index, array)`, and return a new array. [codesignal](https://codesignal.com/blog/25-javascript-interview-questions-and-answers-from-basic-to-senior-level/)
+
+Explain out loud:
+
+- Why `map` is a higher‑order function.  
+- How this relates to functional programming patterns you see in modern JS.
+
+### 2. Remove duplicates from an array (without `Set`) (45–60 min)
+
+Goal: Implement two approaches:
+
+1. Using an object or `Map` to track seen elements.  
+2. Using `filter` and `indexOf`.
+
+Example:
+
+```js
+function unique(arr) {
+  const seen = {};
+  const result = [];
+  for (const item of arr) {
+    if (!seen[item]) {
+      seen[item] = true;
+      result.push(item);
+    }
+  }
+  return result;
+}
+```
+
+Test with:
+
+- All numbers.  
+- Mixed data (numbers, strings).  
+- Already unique arrays.
+
+Then check similar tasks on GeeksforGeeks / w3resource (they often include “remove duplicates” in arrays or strings). [w3resource](https://www.w3resource.com/javascript-exercises/javascript-functions-exercises.php)
+
+### 3. Deep clone basics (30–40 min)
+
+Use your practice sources and interview questions to understand shallow vs deep copying. [geeksforgeeks](https://www.geeksforgeeks.org/javascript/javascript-interview-questions/)
+
+Implement:
+
+- A **shallow** copy with `Object.assign` or spread.  
+- A very simple **deep clone** function that:  
+  - Handles primitives.  
+  - Handles plain objects.  
+  - Handles arrays.
+
+For example:
+
+```js
+function deepClone(value) {
+  if (value === null || typeof value !== 'object') return value;
+  if (Array.isArray(value)) {
+    return value.map(deepClone);
+  }
+  const result = {};
+  for (const key in value) {
+    if (Object.prototype.hasOwnProperty.call(value, key)) {
+      result[key] = deepClone(value[key]);
+    }
+  }
+  return result;
+}
+```
+
+Test by modifying nested fields in the clone and confirming the original doesn’t change.
+
+Shallow vs deep copy, and how they relate to mutation bugs, is a frequent topic in JavaScript interview guides. [youtube](https://www.youtube.com/watch?v=MX48mv73jf8)
+
+***
+
+## Day 5 (Fri): Type Coercion, `==` vs `===`, and Bug Hunting
+
+**Goal:** Be able to explain JS quirks clearly and avoid common pitfalls.
+
+### 1. Study type coercion and equality (30–40 min)
+
+From an interview questions resource, focus on: [geeksforgeeks](https://www.geeksforgeeks.org/javascript/javascript-interview-questions/)
+
+- Difference between `==` and `===`.  
+- How JavaScript coerces values in comparisons, especially with `==`.  
+- `NaN`, `isNaN`, `Number.isNaN`.  
+
+Write your own examples:
+
+```js
+console.log(0 == false);   // true
+console.log(0 === false);  // false
+console.log('' == 0);      // true
+console.log('' === 0);     // false
+console.log(null == undefined); // true
+console.log(null === undefined); // false
+```
+
+Explain:
+
+- Why these happen (coercion rules).  
+- Why you should prefer `===` in almost all cases.
+
+### 2. “Bug demo” exercise (45–60 min)
+
+Write a small piece of code that **breaks** because of `==`, then fix it with `===`.
+
+Example:
+
+```js
+function isEmpty(input) {
+  // BAD: uses ==
+  return input == null;
+}
+
+console.log(isEmpty(0));      // false (ok)
+console.log(isEmpty(''));     // false (ok)
+console.log(isEmpty(null));   // true
+console.log(isEmpty(undefined)); // true
+
+// Now create a subtle bug:
+const userInput = 0;
+if (!isEmpty(userInput)) {
+  console.log('Processing:', userInput);
+}
+```
+
+Then discuss how over‑relying on `==` could misclassify values in more complex cases, and rewrite with `===` and explicit checks.
+
+This mirrors the type‑coercion style questions in 2025 interview lists. [codesignal](https://codesignal.com/blog/25-javascript-interview-questions-and-answers-from-basic-to-senior-level/)
+
+### 3. Quick practice on “basic/advanced JS” (30–45 min)
+
+Do a small set (3–5 questions) from GeeksforGeeks’ JavaScript interview page or CodeSignal’s JS list focusing on coercion, scope, and basics. [geeksforgeeks](https://www.geeksforgeeks.org/javascript/javascript-interview-questions/)
+
+Write answers in your own words, then compare.
+
+***
+
+## Day 6 (Sat): Async – Callbacks, Promises, and `async/await`
+
+**Goal:** Be able to move between callback style, promises, and `async/await` and explain each.
+
+### 1. Learn/review async concepts (30–45 min)
+
+From a modern JS interview questions resource, review: [youtube](https://www.youtube.com/watch?v=MX48mv73jf8)
+
+- What callbacks are; callback hell.  
+- What a Promise is (pending, fulfilled, rejected).  
+- How `then`/`catch` work.  
+- How `async`/`await` sits on top of promises.  
+- Basic idea of the event loop (just enough to explain why async code works the way it does).
+
+### 2. Convert a callback‑based function to a Promise (45–60 min)
+
+Start with a fake callback‑style API:
+
+```js
+function fetchUserCallback(id, callback) {
+  setTimeout(() => {
+    if (id === 0) {
+      callback(new Error('Invalid ID'));
+    } else {
+      callback(null, { id, name: 'Alice' });
+    }
+  }, 500);
+}
+```
+
+Now write:
+
+```js
+function fetchUserPromise(id) {
+  return new Promise((resolve, reject) => {
+    fetchUserCallback(id, (err, data) => {
+      if (err) reject(err);
+      else resolve(data);
+    });
+  });
+}
+```
+
+Test:
+
+```js
+fetchUserPromise(1)
+  .then(user => console.log('User:', user))
+  .catch(err => console.error('Error:', err.message));
+```
+
+Then write an `async` function:
+
+```js
+async function showUser(id) {
+  try {
+    const user = await fetchUserPromise(id);
+    console.log('User:', user);
+  } catch (err) {
+    console.error('Error:', err.message);
+  }
+}
+```
+
+Call `showUser(1)` and `showUser(0)`; read the outputs.
+
+This pattern—wrapping callbacks in promises and using `async/await`—is directly in line with modern interview prep for asynchronous JavaScript. [codesignal](https://codesignal.com/blog/25-javascript-interview-questions-and-answers-from-basic-to-senior-level/)
+
+### 3. Extra practice from sources (30–45 min)
+
+From w3resource and GeeksforGeeks, pick a couple of exercises that touch async or timers (`setTimeout`, basic promise usage) if available. [w3resource](https://www.w3resource.com/javascript-exercises/javascript-functions-exercises.php)
+
+If your chosen list is more conceptual, write your own:
+
+- A function that simulates fetching multiple users in series with `await`.  
+- A function that runs two promises in parallel using `Promise.all`.
+
+***
+
+## Day 7 (Sun): Integration, Mock Interview, and Review
+
+**Goal:** Pull everything together and make sure you can both code and explain what you did.
+
+### 1. Integration mini‑project (60–90 min)
+
+Build a small “user management” script that uses most of the concepts:
+
+- Start with an array of user objects `{ id, name, age }`.  
+- Functions to:  
+  - Get names over a certain age (arrays + filter/map).  
+  - Group users into over/under 25.  
+  - Remove duplicate users by `id`.  
+- A `deepCloneUsers` function using your deep clone logic.  
+- A fake async `fetchUser` using promises/async that returns a user by id with delay and error handling.
+
+This could live in a single file, and you run it a few times to check outputs.
+
+### 2. Mock interview session (~45–60 min)
+
+Pick 8–10 questions from a 2025 JS interview list that cover: [youtube](https://www.youtube.com/watch?v=MX48mv73jf8)
+
+- Data types, `let/var/const`, hoisting.  
+- `==` vs `===`, type coercion examples.  
+- Arrays vs objects, `map`/`filter`/`reduce`.  
+- Closures and `this` vs arrow functions.  
+- Promises and `async/await`.  
+- Shallow vs deep copy.
+
+Answer them out loud while screen‑sharing your code (even if it’s just for yourself). Time yourself: 2–3 minutes per question.
+
+### 3. Week review and next steps (30–45 min)
+
+Reflect and write down:
+
+- Which coding tasks still feel slow or confusing (deep clone, closures, async)?  
+- Which type of questions you consistently miss or hesitate on.  
+- One concrete focus for next week (e.g., “More practice with async patterns and error handling,” or “Strengthen DOM + browser APIs”).
