@@ -1,7 +1,7 @@
 ---
-title: "Building Sunya, a Smart Contract security analyzer"
+title: "Building Sunya, a Smart Contract Security Analyzer"
 publishedAt: "2024-06-26"
-summary: "Meta transaction enabled Smart Contract security analysis, deployment, and verification for Starknet & Bridge Essentials with Ethereum. Dashboard powered by powerful datasets from tokenflow, herodotus, and nethermind."
+summary: "Evolved from meta-transaction dashboard for Starknet/EVM analysis to a simple CLI tool: Static analysis for EVM contracts. Install with curl, analyze with one command."
 images:
   - "/images/projects/sunya/sunya-explanation.mp4"
   - "/images/projects/sunya/cover.jpg"
@@ -13,37 +13,63 @@ team:
     role: "Full Stack Web Developer"
     avatar: "/images/avatar.jpg"
     linkedIn: "https://www.linkedin.com/in/lexworld/"
-link: "https://ethglobal.com/showcase/sunya-r55oq"
+link: "https://sunya.minginc.xyz/"
+github: "https://github.com/13x54n/sunya-v1"
 ---
 
 ## Overview
 
-Built a smart static vulnerability analyzer for Starknet and EVM-compatible smart contracts. Prevents production crashes through automated detection, seamless tooling, and blockchain-integrated audits with transparent IPFS storage.
+Sunya began as a full-stack dashboard for Starknet and EVM smart contract security analysis with ML models, gasless meta-tx, and API integrations. The new v1 version streamlines to a cross-platform CLI tool focused on Slither-powered EVM static analysis—install once, run `sunya scan` anywhere to detect vulnerabilities automatically.
 
 ## Key Features
 
-- **Automated Vulnerability Detection**: Trained custom ML model on Caracal datasets for Starknet contracts; integrated Slither for EVM analysis—delivering smarter, dataset-driven insights.
-- **Smart Resource Management**: Auto-assigns tasks to available core memory, clears temp storage post-analysis, and detects Starknet vs. EVM project configs instantly.
-- **Plug-and-Play Tooling**: Automatically installs dependencies and tools—no version conflicts or manual setup required.
-- **Dashboard Integrations**: Pulls real-time data from Voyager (Starknet), Etherscan (Ethereum), Herodotus (storage proofs), and Tokenflow (tx/events) for full visibility.
-- **Gas Tank Meta-Transactions**: Powers seamless, gasless blockchain writes via ArgentX and Dynamic Wallet with multi-sig support—making dApp interactions frictionless.
-- **Audit Reporting & Minting**: Exports PDF reports; mints audits to IPFS-backed registry with L1/L2 event monitoring for verification.
+- **One-Command EVM Analysis**: `sunya scan` auto-detects Solidity files in `./contracts` or `./src`, runs Slither—no config needed for basic use.
+- **Frictionless Install**: Curl/PowerShell scripts handle Slither/Node/Python dependencies across Linux, macOS, Windows; auto-updates tooling.
+- **Configurable Scans**: `sunya.config.json` for custom directories (`./src` for Foundry), output formats (table/JSON), and env vars like `SUNYA_CONTRACTS_DIR`.
+- **CLI Commands**: `sunya install` (updates Slither), `sunya uninstall [-y]`, `sunya --help`—simple, scriptable for CI/CD pipelines.
+- **Builds on Original**: Retains Slither core from dashboard version; drops Starknet/ML/dashboard for lightweight, local-first audits (80% faster claimed).
+- **Cross-Platform**: Bash for Unix, PowerShell for Windows; adds PATH setup for instant `sunya` access post-install.
 
 ## Technologies Used
 
-- **Vite.js + React**: Interactive dashboard for users, devs, and security teams.
-- **Scarb**: Starknet contract build/deploy tooling.
-- **Slither**: EVM static vulnerability analysis.
-- **ArgentX & Dynamic Wallet**: Meta-tx, multi-sig, gasless interactions.
-- **IPFS (Lighthouse)**: Decentralized audit report storage.
-- **Nethermind Extension**: Local Audit Registry contract testing.
-- **APIs**: Voyager, Etherscan, Herodotus, Tokenflow.
+- **Node.js/Bash/PowerShell**: Cross-platform installer and CLI runtime.
+- **Slither**: Core EVM static vulnerability detector (auto-installed).
+- **JSON Config**: Simple project-level customization.
+- **Inherited from v0**: Core Slither integration; simplified from Vite/React, Scarb, ArgentX, IPFS, Voyager/Etherscan APIs.
+
+## Installation Examples
+
+**Linux/macOS:**
+```bash
+curl -sSL https://raw.githubusercontent.com/13x54n/sunya-v1/main/package/bin/install | sh
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc  # or ~/.bashrc
+sunya scan  # Ready!
+```
+
+**Windows (PowerShell):**
+```powershell
+irm https://raw.githubusercontent.com/13x54n/sunya-v1/main/package/bin/install.ps1 | iex
+sunya scan  # Restart terminal first
+```
+
+**Foundry Project Example:**
+```bash
+forge init my-token && cd my-token
+sunya scan  # Scans ./src/*.sol, outputs Slither table
+```
+
+**Custom Config (`sunya.config.json`):**
+```json
+{
+  "contractsDir": "./src",
+  "output": { "format": "table" }
+}
+```
 
 ## Challenges and Learnings
 
-Key challenge: Cross-chain compatibility (Starknet/EVM) with resource-heavy analysis, minus user friction. Solved via auto-detection, specialized ML training, and dependency automation. Mastered secure dApp patterns through real-time listeners and meta-tx integration.
+Key evolution: Simplified cross-chain dashboard to portable CLI amid resource constraints and user feedback favoring local tools over web apps. Mastered platform-specific installers (Windows PowerShell quirks, PATH persistence) while preserving Slither's power. Learned CLI tools excel for devs—enabling CI integration vs. original's dApp friction.
 
 ## Outcome
 
-**StarkHack (EthGlobal) Winner**: Voyager API Prize, Dynamic Pool, Herodotus Best Storage Proof API.  
-Delivers production-grade security, transparent ownership proofs, and 80% faster audits—now battle-tested for real-world smart contract protection.
+**From StarkHack Winner** (Voyager/Herodotus prizes) to production CLI: Delivers instant Slither audits anywhere, no setup friction. Battle-tested for Foundry/Hardhat projects; open-source at github.com/13x54n/sunya-v1 for community contributions. Powers faster, local-first smart contract security.
