@@ -77,12 +77,15 @@ function createImage({ alt, src, ...props }: MediaProps & { src: string }) {
   );
 }
 
+function isReactElement(node: unknown): node is React.ReactElement {
+  return node !== null && typeof node === "object" && "props" in node;
+}
+
 function getTextContent(node: ReactNode): string {
   if (typeof node === "string") return node;
   if (typeof node === "number") return String(node);
   if (Array.isArray(node)) return node.map(getTextContent).join("");
-  if (node && typeof node === "object" && "props" in node)
-    return getTextContent((node as React.ReactElement).props.children);
+  if (isReactElement(node)) return getTextContent(node.props.children);
   return "";
 }
 
