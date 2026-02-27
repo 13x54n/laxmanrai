@@ -40,6 +40,7 @@ Sunya began as a full-stack dashboard for Starknet and EVM smart contract securi
 ## Installation Examples
 
 **Linux/macOS:**
+
 ```bash
 curl -sSL https://raw.githubusercontent.com/13x54n/sunya-v1/main/package/bin/install | sh
 echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc  # or ~/.bashrc
@@ -47,18 +48,21 @@ sunya scan  # Ready!
 ```
 
 **Windows (PowerShell):**
+
 ```powershell
 irm https://raw.githubusercontent.com/13x54n/sunya-v1/main/package/bin/install.ps1 | iex
 sunya scan  # Restart terminal first
 ```
 
 **Foundry Project Example:**
+
 ```bash
 forge init my-token && cd my-token
 sunya scan  # Scans ./src/*.sol, outputs Slither table
 ```
 
 **Custom Config (`sunya.config.json`):**
+
 ```json
 {
   "contractsDir": "./src",

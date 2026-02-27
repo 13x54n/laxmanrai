@@ -1,8 +1,6 @@
 "use client";
 
 import {
-  AvatarGroup,
-  Carousel,
   Column,
   Flex,
   Heading,
