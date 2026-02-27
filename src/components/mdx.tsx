@@ -77,7 +77,7 @@ function createImage({ alt, src, ...props }: MediaProps & { src: string }) {
   );
 }
 
-function isReactElement(node: unknown): node is React.ReactElement {
+function isReactElement(node: unknown): node is React.ReactElement<{ children?: ReactNode }> {
   return node !== null && typeof node === "object" && "props" in node;
 }
 
