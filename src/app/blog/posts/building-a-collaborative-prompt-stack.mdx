@@ -1,0 +1,148 @@
+---
+title: "Prompt Library Guide: Building a Collaborative Prompt Stack for the Agent Era"  
+summary: "I built the Prompt Library thinking it might help coders and builders tame the growing complexity of prompt workflows. Here’s how it works today—how the backend and frontend connect, how events power notifications, and where it’s heading next with agentic UIs."  
+publishedAt: "2026-03-02"  
+image: "https://images.unsplash.com/photo-1772488167441-c91d6d510477?q=80&w=2466&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"  
+tag: "AI Engineering"  
+---
+
+Prompt engineering used to feel like the new front-end dev—half art, half trial-and-error. But as soon as teams started collaborating on prompts, the need for real infrastructure became obvious: versioning, discussions, reviews, notifications. So I built **[Prompt Library](https://prompt.minginc.xyz/)**—a modular, event-driven system to manage prompts like code.  
+
+I think it might help others too. Here’s how it fits together today, how the parts talk to each other, and where I see it going next—especially toward **agents and agentic UIs**.
+
+***
+
+## Start with a simple idea: prompts as first-class objects
+
+At its core, Prompt Library treats each prompt the way Git treats source code. Every prompt has a history, contributors, forks, and even "pull requests."  
+
+The architecture reflects that philosophy:
+
+- **Frontend:** built with Next.js App Router—fast, typed, and React at heart.  
+- **Backends:** three Node.js microservices—`auth-service`, `prompt-service`, and `notification-service`.  
+- **Shared infra:** Firebase Auth for identity, MongoDB for persistence, and RabbitMQ for event choreography.
+
+That separation means teams can work independently. Auth can evolve without touching prompt logic, notifications can scale asynchronously, and the front end just consumes stable APIs.
+
+***
+
+## The event-driven heart
+
+Most of the magic happens through **domain events**.  
+
+When a user upvotes, forks, answers a question, or merges a pull request, `prompt-service` emits an event like `prompt.upvoted` or `pr.merged`. The `notification-service` listens via RabbitMQ and translates those into user-visible notifications.
+
+An example event envelope looks like:
+
+```ts
+{
+  eventId: "uuid",
+  eventType: "discussion.answer.created",
+  occurredAt: new Date().toISOString(),
+  payload: { promptId, actorUid, body }
+}
+```
+
+That consistent event schema becomes the nervous system of the app. It's easy to add new behaviors later—say, a "prompt recommended" event—without forcing core services to know about each other.
+
+***
+
+## Authentication done right
+
+Too many small projects skip proper auth plumbing. I didn't want that.  
+
+The app uses **Firebase Auth** both client- and server-side. Frontend sessions store only Firebase ID tokens; backend services verify them via Firebase Admin SDK and attach a canonical `uid`.  
+
+That ensures trust always flows server-side—no fake UIDs from the client, no blind spots in "who's actually calling."  
+
+A single login flow looks like this:
+
+1. User signs in via Google in the frontend.  
+2. Frontend gets an ID token and calls `POST /api/auth/record-login`.  
+3. Auth-service verifies the token, upserts a profile, and issues internal events if needed.  
+4. Frontend fetches `/api/auth/me` as the ground truth.
+
+You end up with unified identity and profile state across the system—critical for any community-driven product.
+
+***
+
+## Shared types = fewer integration bugs
+
+Frontend and backend both import the same shared TypeScript types—things like `CreateUserRequest`, `Prompt`, or `UpvoteResponse`.  
+
+That might sound small, but it prevents the worst kind of bug: the "it compiled fine but exploded at runtime" mismatch between layers.  
+
+The shared contracts also make it easier to imagine **agent hooks** later—typed APIs that an AI agent could interact with confidently, understanding the same schema your UI uses.
+
+***
+
+## Why event-driven beats monoliths
+
+The event system doesn't just keep features decoupled—it enables future extensibility.  
+
+When an event like `discussion.answer.created` occurs, it's trivial to:
+
+- Trigger notifications.  
+- Update an activity feed.  
+- Feed insights into analytics or an AI summarizer agent.  
+
+No code rewrites; just spin up a new consumer.  
+
+That's how I see this evolving: the **Prompt Library** as a core substrate agents can subscribe to—observing what humans discuss, which prompts trend, how experiments evolve.
+
+***
+
+## Frontend integrations and the coder experience
+
+The Next.js frontend talks directly to each backend via clear environment-defined base URLs (`NEXT_PUBLIC_AUTH_SERVICE_URL`, etc.).  
+
+It uses unified helpers like `/frontend/lib/api.ts` for data access and `/frontend/lib/auth.ts` for session handling.  
+
+The result? You can spin up local development with:
+
+```
+# Terminal 1
+mongod && rabbitmq-server
+
+# Terminal 2
+pnpm --filter auth-service dev
+pnpm --filter prompt-service dev
+pnpm --filter notification-service dev
+
+# Terminal 3
+pnpm --filter frontend dev
+```
+
+Once running, you get full sign-in, following, discussions, pull requests, and notifications—each powered by real infrastructure, not mock calls.
+
+***
+
+## From community prompts to agentic UIs
+
+Here's where I think it gets exciting. The same event and type system powering human collaboration can enable **autonomous agents** to participate safely.  
+
+Imagine an AI agent that:
+
+- Submits a prompt improvement as a typed "pull request."  
+- Summarizes discussions in real time.  
+- Suggests tags and prompt metadata based on patterns.  
+- Communicates via the same RabbitMQ event streams as users.
+
+Because every interaction is typed, auditable, and event-based, the system can integrate agents without chaos—just another participant in the same ecosystem.
+
+That's the beginning of what I call an **agentic UI**: a human-AI collaborative interface where actions flow through shared contracts and type-safe events.
+
+***
+
+## Wrapping up
+
+Prompt Library started as a practical tool—a way to make prompt collaboration feel like modern coding. But the longer I've built it, the more it's become a blueprint for **agent-ready applications**.  
+
+Microservices, shared types, event-driven patterns, and clear auth boundaries are all just enablers. The end goal is a place where developers, creators, and agents can work side by side.
+
+It's not perfect, and there's plenty to refine (API gateway, schema registry, etc.), but seeing real discussions, forks, and merges already happening has me convinced—it's working.
+
+**[Try Prompt Library live →](https://prompt.minginc.xyz/)**
+
+If this kind of architecture excites you, you might be thinking the same thing I am:  
+**we're not just building UIs anymore; we're building ecosystems for agents.**
