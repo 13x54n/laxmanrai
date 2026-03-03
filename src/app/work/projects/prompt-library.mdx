@@ -1,0 +1,49 @@
+---
+title: "Prompt Library: Building a Collaborative Prompt Stack for the Agent Era."
+publishedAt: "2026-03-03"
+summary: "Prompt Library is a GitHub-style platform for AI prompts: discover trending prompts, fork and contribute variants, discuss improvements, and merge pull requests."
+images:
+  - "https://images.unsplash.com/photo-1772488167441-c91d6d510477?q=80&w=2466&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  - "/images/projects/prompt-library/1.jpeg"
+  - "/images/projects/prompt-library/2.jpeg"
+  - "/images/projects/prompt-library/3.jpeg"
+team:
+  - name: "Laxman Rai"
+    role: "Full Stack Web Developer"
+    avatar: "/images/avatar.jpg"
+    linkedIn: "https://www.linkedin.com/in/lexworld/"
+link: "https://prompt.minginc.xyz"
+---
+
+## Overview
+
+Built a production-grade collaborative prompt library platform as a full-stack developer showcase, featuring microservices architecture, real-time notifications, and social workflows. Demonstrates expertise in scalable Node.js backends, Next.js frontend integration, and event-driven systems for AI tooling platforms. 
+
+## Key Contributions
+
+- **Designed Microservices Architecture**: Split the app into three Node.js services (Auth, Prompt, Notification) and a Next.js frontend with clear domain boundaries and service URLs configured via environment variables with localhost fallbacks. 
+- **Implemented Firebase Authentication**: Built the full sign-in lifecycle using Firebase Auth, including token verification middleware, login recording, and profile/username sync across services. 
+- **Developed Prompt Collaboration Features**: Implemented prompt CRUD, forking, upvoting, discussions, and pull requests with ownership checks, activity feeds, and contributor summaries. 
+- **Architected Event-Driven Notifications**: Wired RabbitMQ as a domain event bus, publishing prompt/auth events and consuming them to create user-facing notifications with retry and dead-letter queues. 
+- **Optimized Frontend Integration**: Created a unified data access layer in Next.js, using parallel fetches and auth-aware SSR to hydrate prompt, discussion, PR, and notification data on key routes. 
+
+## Technical Implementation
+
+
+
+I organized the system into a Next.js App Router frontend and three Node.js microservices, each backed by MongoDB and integrated via Firebase Auth and RabbitMQ. The auth-service owns user identity, profiles, usernames, and follow graph; the prompt-service owns prompts, discussions, and PR workflows; and the notification-service maps domain events into notification records exposed via a dedicated API. 
+
+Authentication uses Firebase ID tokens attached as Bearer headers from the frontend, with backend middleware verifying tokens, attaching `req.uid`, and enforcing ownership rules like “only prompt owner can merge PRs or accept answers.” The prompt-service and auth-service publish structured events (for example `prompt.forked`, `pr.merged`, `user.followed`) to the `domain.events` topic exchange, which the notification-service consumes to create typed notifications such as `prompt_upvoted` or `user_followed` while avoiding self-notifications. 
+
+On the frontend, routes like `/prompts/[id]`, `/profile/[username]`, and `/notifications` compose data via centralized helpers in `frontend/lib/api.ts` and `frontend/lib/auth.ts`, with `AuthProvider` maintaining client auth state and enabling instant unread-count badge updates when notifications are read or archived. Unlisted prompts are enforced as owner-only across listings while remaining accessible via direct routes to the owner, with SSR forwarding auth context so visibility checks work on first render. 
+
+## Challenges Overcome
+
+- **Eventual Consistency Across Services**: Profile and username synchronization needed best-effort cross-service calls (for example `POST /api/prompts/sync-username`) instead of distributed transactions, while still keeping authored content discoverable by updated usernames. 
+- **Designing Robust Event Pipelines**: Defining a consistent domain event envelope (eventId, eventType, occurredAt, payload) and a topic-based exchange simplified routing, retries, and dead-letter handling in the notification pipeline. 
+- **Real-Time UX Without Over-Engineering**: Achieved instant bell unread-count updates via lightweight client event sync between the notifications center and header dropdown instead of introducing heavier websockets or polling. 
+- **Secure Ownership & Permissions**: Codified rules like “users can’t fork their own prompts” and “users can’t follow themselves,” and enforced them uniformly across services through shared token verification patterns. 
+
+## Technologies Mastered
+
+I worked end-to-end across the stack using **Next.js** (App Router, server components) for the frontend, and **Node.js/Express** for the three backend services. Each domain uses **MongoDB** as its primary datastore, **Firebase Auth** for secure identity, and **RabbitMQ** as the domain event bus connecting auth/prompt producers to the notification consumer. 
